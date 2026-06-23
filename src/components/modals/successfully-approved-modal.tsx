@@ -11,7 +11,7 @@ import {
 // import Link from "next/link";
 import Image from "next/image";
 
-import logo from "../../../public/assets/images/logo.png"
+// import logo from "../../../public/assets/images/logo.png"
 
 interface SuccessfullyApprovedModalProps {
   title: string;
@@ -41,7 +41,7 @@ const SuccessfullyApprovedModal: React.FC<SuccessfullyApprovedModalProps> = ({
               </div> */}
 
               <Image
-                src={logo}
+                src="/assets/images/logo.png"
                 alt="password reset successfully"
                 width={400}
                 height={400}

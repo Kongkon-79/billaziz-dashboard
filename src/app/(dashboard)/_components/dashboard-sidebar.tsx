@@ -16,7 +16,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import logo from "../../../../public/assets/images/logo.png";
+// import logo from "../../../../public/assets/images/logo.png"
 import LogoutModal from "@/components/modals/logout-modal";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -63,7 +63,7 @@ export function DashboardSidebar() {
                 <SidebarGroupLabel className="mt-5 mb-5 flex h-[80px] justify-center">
                   <Link href="/">
                     <Image
-                      src={logo}
+                      src="/assets/images/logo.png"
                       alt="logo"
                       width={1000}
                       height={1000}

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Image from 'next/image'
 import { useMutation } from "@tanstack/react-query";
-import logo from "../../../../../public/assets/images/logo.png"
+// import logo from "../../../../../public/assets/images/logo.png"
 
 import { Button } from "@/components/ui/button";
 import {
@@ -70,7 +70,7 @@ const ForgotPasswordForm = () => {
       <div className="w-full md:w-[570px] bg-white rounded-[16px] border-[2px] border-[#E7E7E7] shadow-[0px_0px_32px_0px_#0000001F] p-5 md:p-6">
         <div className="w-full flex items-center justify-center pb-6">
           <Link href="/">
-          <Image src={logo} alt="auth logo" width={500} height={500} className="w-[174px] h-[94px] object-contain" />
+          <Image src="/assets/images/logo.png" alt="auth logo" width={500} height={500} className="w-[174px] h-[94px] object-contain" />
           </Link>
         </div>
 
