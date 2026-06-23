@@ -106,14 +106,7 @@ const FaqContainer = () => {
       queryKey: ["faqs", page],
       queryFn: async () => {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/faqs?sortBy=createdAt&limit=10&page=${page}`,
-          {
-            method: "GET",
-            headers: {
-              accept: "*/*",
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/faqs?sortBy=createdAt&limit=10&page=${page}`
         );
 
         const response = await res.json();

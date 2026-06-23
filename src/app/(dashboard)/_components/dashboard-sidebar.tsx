@@ -56,7 +56,7 @@ export function DashboardSidebar() {
   return (
     <div>
       <Sidebar className="w-[320px] border-none">
-        <SidebarContent className="scrollbar-hide bg-gradient-to-b from-[#76B51B] to-[#274202]">
+        <SidebarContent className="scrollbar-hide bg-gradient-to-b from-[#151C28] to-[#06080c]">
           <SidebarGroup className="p-0">
             <div className="flex min-h-screen flex-col justify-between pb-5">
               <div>
