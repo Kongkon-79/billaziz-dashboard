@@ -1,4 +1,12 @@
-export type LeadStatus = "New" | "Contacted" | "Qualified" | "Converted" | "Lost";
+export type LeadStatus =
+  | "New"
+  | "Contacted"
+  | "Qualified"
+  | "Proposal Sent"
+  | "Closed Won"
+  | "Closed Lost";
+
+export type LeadSource = "Website Form" | "Chatbot" | "Manual Entry";
 
 export interface LeadNote {
   _id?: string;
@@ -26,6 +34,7 @@ export interface LeadItem {
   source?: string;
   status: LeadStatus | string;
   notes?: LeadNote[];
+  assignedTo?: string;
   createdAt: string;
   updatedAt: string;
   __v?: number;

@@ -37,6 +37,26 @@ const items = [
     url: "/faq",
     icon: TableOfContents ,
   },
+    {
+    title: "Applied Job",
+    url: "/applied-job",
+    icon: LayoutDashboard,
+  },
+    {
+    title: "Jobs",
+    url: "/jobs",
+    icon: TableOfContents ,
+  },
+     {
+    title: "Email Automation",
+    url: "/email-automation",
+    icon: LayoutDashboard,
+  },
+    {
+    title: "Knowledge Base",
+    url: "/knowledge-base",
+    icon: TableOfContents ,
+  },
 ];
 
 export function DashboardSidebar() {

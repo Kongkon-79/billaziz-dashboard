@@ -1,12 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarClock, Eye, Loader2, Trash2 } from "lucide-react";
+import { CalendarClock, Eye, Loader2, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -15,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 import DeleteModal from "@/components/modals/delete-modal";
 import ErrorContainer from "@/components/shared/ErrorContainer/ErrorContainer";
 import CustomPagination from "@/components/shared/pagination/custom-pagination";
@@ -23,8 +30,21 @@ import type {
   LeadItem,
   LeadListResponse,
   LeadMutationResponse,
+  LeadSource,
+  LeadStatus,
 } from "./lead-data-type";
 import ViewLeadDialog from "./view-lead-dialog";
+
+const leadStatuses: LeadStatus[] = [
+  "New",
+  "Contacted",
+  "Qualified",
+  "Proposal Sent",
+  "Closed Won",
+  "Closed Lost",
+];
+
+const leadSources: LeadSource[] = ["Website Form", "Chatbot", "Manual Entry"];
 
 const formatDate = (value: string) =>
   new Intl.DateTimeFormat("en-GB", {
@@ -41,9 +61,11 @@ const getStatusStyles = (status: string) => {
       return "bg-[#FFF4DB] text-[#B7791F] border-[#F6D28B]";
     case "Qualified":
       return "bg-[#E6FFFA] text-[#0F766E] border-[#99F6E4]";
-    case "Converted":
+    case "Proposal Sent":
+      return "bg-[#EDE9FE] text-[#6D28D9] border-[#DDD6FE]";
+    case "Closed Won":
       return "bg-[#DCFCE7] text-[#15803D] border-[#86EFAC]";
-    case "Lost":
+    case "Closed Lost":
       return "bg-[#FEE2E2] text-[#DC2626] border-[#FECACA]";
     default:
       return "bg-[#F3F4F6] text-[#68706A] border-[#D9DEE5]";
@@ -60,15 +82,38 @@ const LeadManagementContainer = () => {
     ?.accessToken;
 
   const [page, setPage] = useState(1);
+  const [searchInput, setSearchInput] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [selectedLead, setSelectedLead] = useState<LeadItem | null>(null);
   const [leadToDelete, setLeadToDelete] = useState<LeadItem | null>(null);
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setPage(1);
+      setSearchTerm(searchInput.trim());
+    }, 400);
+
+    return () => window.clearTimeout(timer);
+  }, [searchInput]);
+
   const { data, isLoading, isError, error, isFetching } =
     useQuery<LeadListResponse>({
-      queryKey: ["leads", page],
+      queryKey: ["leads", page, searchTerm, statusFilter, sourceFilter],
       queryFn: async () => {
+        const params = new URLSearchParams({
+          sortBy: "createdAt",
+          limit: "10",
+          page: String(page),
+        });
+
+        if (searchTerm) params.set("searchTerm", searchTerm);
+        if (statusFilter !== "all") params.set("status", statusFilter);
+        if (sourceFilter !== "all") params.set("source", sourceFilter);
+
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/leads?sortBy=createdAt&limit=10&page=${page}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/leads?${params.toString()}`,
           {
             headers: {
               accept: "*/*",
@@ -87,6 +132,48 @@ const LeadManagementContainer = () => {
       },
       enabled: !!token,
     });
+
+  const updateLeadStatusMutation = useMutation({
+    mutationFn: async ({
+      id,
+      status,
+    }: {
+      id: string;
+      status: LeadStatus;
+    }) => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/leads/${id}/status`,
+        {
+          method: "PUT",
+          headers: {
+            accept: "*/*",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status }),
+        }
+      );
+
+      const response: LeadMutationResponse = await res.json();
+
+      if (!res.ok || !response?.success) {
+        throw new Error(response?.message || "Failed to update lead status");
+      }
+
+      return response;
+    },
+    onSuccess: (response) => {
+      toast.success(response.message || "Lead status updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+    },
+    onError: (mutationError) => {
+      toast.error(
+        mutationError instanceof Error
+          ? mutationError.message
+          : "Failed to update lead status"
+      );
+    },
+  });
 
   const deleteLeadMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -184,6 +271,58 @@ const LeadManagementContainer = () => {
         </div>
 
         <div className="px-6 py-6">
+          <div className="mb-5 grid gap-4 lg:grid-cols-[1.5fr_1fr_1fr]">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#68706A]" />
+              <Input
+                value={searchInput}
+                onChange={(event) => setSearchInput(event.target.value)}
+                placeholder="Search by name, email, phone, company..."
+                className="h-11 rounded-[10px] pl-10"
+              />
+            </div>
+
+            <Select
+              value={statusFilter}
+              onValueChange={(value) => {
+                setPage(1);
+                setStatusFilter(value);
+              }}
+            >
+              <SelectTrigger className="h-11 rounded-[10px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                {leadStatuses.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={sourceFilter}
+              onValueChange={(value) => {
+                setPage(1);
+                setSourceFilter(value);
+              }}
+            >
+              <SelectTrigger className="h-11 rounded-[10px]">
+                <SelectValue placeholder="Filter by source" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Sources</SelectItem>
+                {leadSources.map((source) => (
+                  <SelectItem key={source} value={source}>
+                    {source}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {isLoading ? (
             <TableSkeletonWrapper height="320px" />
           ) : leads.length === 0 ? (
@@ -258,12 +397,34 @@ const LeadManagementContainer = () => {
                         </TableCell>
 
                         <TableCell className="px-4 py-4">
-                          <Badge
-                            variant="outline"
-                            className={getStatusStyles(lead.status)}
+                          <Select
+                            value={lead.status}
+                            onValueChange={(value) =>
+                              updateLeadStatusMutation.mutate({
+                                id: lead._id,
+                                status: value as LeadStatus,
+                              })
+                            }
+                            disabled={
+                              updateLeadStatusMutation.isPending &&
+                              updateLeadStatusMutation.variables?.id === lead._id
+                            }
                           >
-                            {lead.status}
-                          </Badge>
+                            <SelectTrigger
+                              className={`h-10 min-w-[170px] rounded-[10px] text-xs font-medium ${getStatusStyles(
+                                lead.status
+                              )}`}
+                            >
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {leadStatuses.map((status) => (
+                                <SelectItem key={status} value={status}>
+                                  {status}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </TableCell>
 
                         <TableCell className="px-4 py-4">
