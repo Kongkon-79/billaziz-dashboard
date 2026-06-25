@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,8 +21,6 @@ import { useSession } from "next-auth/react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-// ──────────────────────────────────────────────────────────────
-// Password validation schema (exactly like your screenshot)
 const passwordSchema = z
   .string()
   .min(8, {
@@ -76,7 +74,6 @@ export default function ChangePasswordForm() {
 
   const newPassword = form.watch("newPassword");
 
-  // Live checks for password rules
   const checks = {
     length: newPassword.length >= 8,
     uppercase: /[A-Z]/.test(newPassword),
@@ -86,10 +83,8 @@ export default function ChangePasswordForm() {
     noSpace: !/\s/.test(newPassword),
   };
 
-  // api integration
-
   const { mutate, isPending } = useMutation({
-    mutationKey: ["chnage-password"],
+    mutationKey: ["change-password"],
     mutationFn: async (values: {
       oldPassword: string;
       newPassword: string;
@@ -105,21 +100,28 @@ export default function ChangePasswordForm() {
           body: JSON.stringify(values),
         },
       );
-      return await res.json();
+      const data = await res.json();
+
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.message || "Unable to change password");
+      }
+
+      return data;
     },
     onSuccess: (data) => {
-      if (!data?.success) {
-        toast.error(data?.message || "Something went wrong");
-        return;
-      }
-      toast.success(data?.message || "Password Reset successfull");
+      toast.success(data?.message || "Password changed successfully");
       form.reset();
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Unable to change password",
+      );
     },
   });
 
   function onSubmit(values: FormValues) {
-    console.log("Password change successful:", values);
-
     const payload = {
       oldPassword: values?.currentPassword,
       newPassword: values?.newPassword,
@@ -129,24 +131,23 @@ export default function ChangePasswordForm() {
   }
 
   return (
-    <div className=" p-6">
+    <div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 bg-[#F8F9FA] border border-[#E6E7E6] shadow-[0px_4px_8px_0px_#0000001F] p-6 rounded-[8px]"
+          className="space-y-8 rounded-[12px] border border-[#E6E7E6] bg-white p-4 shadow-[0px_4px_12px_0px_#0000000D] md:p-6"
         >
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-[#343A40] leading-normal">
-                Changes Password
+              <h2 className="text-xl font-semibold leading-normal text-[#343A40] md:text-2xl">
+                Change Password
               </h2>
-              <p className="text-base font-normal text-[#68706A] leading-normal pt-1">
-                Manage your account preferences, security settings, and privacy
-                options.
+              <p className="pt-1 text-sm font-normal leading-normal text-[#68706A]">
+                Keep your account secure by choosing a strong, unique password.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
               {/* Current Password */}
               <FormField
                 control={form.control}
@@ -159,14 +160,19 @@ export default function ChangePasswordForm() {
                     <FormControl>
                       <div className="relative">
                         <Input
-                          className="w-full h-[52px] bg-[#EDF2F6] border-[1px] border-[#E0E4EC] rounded-[8px] py-3 px-6 outline-none right-0 text-base font-semibold leading-[150%] text-[#343A40] placeholder:text-[#b0afaf]"
+                          className="h-[52px] w-full rounded-[8px] border border-[#E0E4EC] bg-[#EDF2F6] px-4 py-3 pr-12 text-base font-medium leading-[150%] text-[#343A40] placeholder:text-[#b0afaf] focus-visible:ring-primary"
                           type={showPasswords.current ? "text" : "password"}
                           placeholder="••••••••••••"
                           {...field}
                         />
                         <button
                           type="button"
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-[#68706A] transition hover:text-primary"
+                          aria-label={
+                            showPasswords.current
+                              ? "Hide current password"
+                              : "Show current password"
+                          }
                           onClick={() =>
                             setShowPasswords((s) => ({
                               ...s,
@@ -198,14 +204,19 @@ export default function ChangePasswordForm() {
                     <FormControl>
                       <div className="relative">
                         <Input
-                          className="w-full h-[52px] bg-[#EDF2F6] border-[1px] border-[#E0E4EC] rounded-[8px] py-3 px-6 outline-none right-0 text-base font-semibold leading-[150%] text-[#343A40] placeholder:text-[#b0afaf]"
+                          className="h-[52px] w-full rounded-[8px] border border-[#E0E4EC] bg-[#EDF2F6] px-4 py-3 pr-12 text-base font-medium leading-[150%] text-[#343A40] placeholder:text-[#b0afaf] focus-visible:ring-primary"
                           type={showPasswords.new ? "text" : "password"}
                           placeholder="••••••••••••"
                           {...field}
                         />
                         <button
                           type="button"
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-[#68706A] transition hover:text-primary"
+                          aria-label={
+                            showPasswords.new
+                              ? "Hide new password"
+                              : "Show new password"
+                          }
                           onClick={() =>
                             setShowPasswords((s) => ({ ...s, new: !s.new }))
                           }
@@ -235,14 +246,19 @@ export default function ChangePasswordForm() {
                     <FormControl>
                       <div className="relative">
                         <Input
-                          className="w-full h-[52px] bg-[#EDF2F6] border-[1px] border-[#E0E4EC] rounded-[8px] py-3 px-6 outline-none right-0 text-base font-semibold leading-[150%] text-[#343A40] placeholder:text-[#b0afaf]"
+                          className="h-[52px] w-full rounded-[8px] border border-[#E0E4EC] bg-[#EDF2F6] px-4 py-3 pr-12 text-base font-medium leading-[150%] text-[#343A40] placeholder:text-[#b0afaf] focus-visible:ring-primary"
                           type={showPasswords.confirm ? "text" : "password"}
                           placeholder="••••••••••••"
                           {...field}
                         />
                         <button
                           type="button"
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-[#68706A] transition hover:text-primary"
+                          aria-label={
+                            showPasswords.confirm
+                              ? "Hide password confirmation"
+                              : "Show password confirmation"
+                          }
                           onClick={() =>
                             setShowPasswords((s) => ({
                               ...s,
@@ -265,9 +281,11 @@ export default function ChangePasswordForm() {
             </div>
           </div>
 
-          {/*  Password requirements list */}
-          <div className="flex flex-col justify-center">
-            <ul className="space-y-3 text-sm">
+          <div className="flex flex-col justify-center rounded-[10px] border border-[#E6E7E6] bg-[#F8F9FA] p-4">
+            <p className="mb-3 text-sm font-semibold text-[#343A40]">
+              Password requirements
+            </p>
+            <ul className="grid gap-3 text-sm md:grid-cols-2">
               <li className="flex items-center gap-2">
                 {checks.length ? (
                   <Check className="text-[#1F9854]" size={18} />
@@ -351,21 +369,21 @@ export default function ChangePasswordForm() {
             </ul>
           </div>
 
-          {/* Buttons */}
-          <div className="flex justify-end gap-4 pt-6">
+          <div className="flex flex-col-reverse gap-3 border-t border-[#E6E7E6] pt-5 sm:flex-row sm:justify-end">
             <Button
               type="button"
               variant="outline"
               onClick={() => form.reset()}
-              className="h-[49px] text-[#F2415A] text-lg font-semibold leading-normal border-[1px] border-[#F2415A] rounded-[8px] py-3 px-6"
+              className="h-12 rounded-[8px] border-primary px-6 font-semibold text-primary hover:bg-[#FFF7F2] hover:text-primary"
             >
               Discard Changes
             </Button>
             <Button
               disabled={isPending}
               type="submit"
-              className="h-[49px] bg-gradient-to-b from-[#B1B2F4] to-[#6466E9] hover:from-[#9FA0F0] hover:to-[#4E50E0] transition-all duration-300 text-[#F7F8FA] font-bold text-lg leading-normal rounded-[8px] px-12"
+              className="h-12 rounded-[8px] bg-primary px-8 font-semibold text-white hover:bg-primary/90"
             >
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isPending ? "Saving..." : "Save Changes"}
             </Button>
           </div>

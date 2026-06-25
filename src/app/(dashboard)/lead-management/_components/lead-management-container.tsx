@@ -30,7 +30,7 @@ import type {
   LeadItem,
   LeadListResponse,
   LeadMutationResponse,
-  LeadSource,
+  // LeadSource,
   LeadStatus,
 } from "./lead-data-type";
 import ViewLeadDialog from "./view-lead-dialog";
@@ -44,7 +44,7 @@ const leadStatuses: LeadStatus[] = [
   "Closed Lost",
 ];
 
-const leadSources: LeadSource[] = ["Website Form", "Chatbot", "Manual Entry"];
+// const leadSources: LeadSource[] = ["Website Form", "Chatbot", "Manual Entry"];
 
 const formatDate = (value: string) =>
   new Intl.DateTimeFormat("en-GB", {
@@ -85,7 +85,7 @@ const LeadManagementContainer = () => {
   const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [sourceFilter, setSourceFilter] = useState<string>("all");
+  // const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [selectedLead, setSelectedLead] = useState<LeadItem | null>(null);
   const [leadToDelete, setLeadToDelete] = useState<LeadItem | null>(null);
 
@@ -100,7 +100,7 @@ const LeadManagementContainer = () => {
 
   const { data, isLoading, isError, error, isFetching } =
     useQuery<LeadListResponse>({
-      queryKey: ["leads", page, searchTerm, statusFilter, sourceFilter],
+      queryKey: ["leads", page, searchTerm, statusFilter],
       queryFn: async () => {
         const params = new URLSearchParams({
           sortBy: "createdAt",
@@ -110,7 +110,7 @@ const LeadManagementContainer = () => {
 
         if (searchTerm) params.set("searchTerm", searchTerm);
         if (statusFilter !== "all") params.set("status", statusFilter);
-        if (sourceFilter !== "all") params.set("source", sourceFilter);
+        // if (sourceFilter !== "all") params.set("source", sourceFilter);
 
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/leads?${params.toString()}`,
@@ -276,6 +276,7 @@ const LeadManagementContainer = () => {
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#68706A]" />
               <Input
                 value={searchInput}
+                type="search"
                 onChange={(event) => setSearchInput(event.target.value)}
                 placeholder="Search by name, email, phone, company..."
                 className="h-11 rounded-[10px] pl-10"
@@ -292,17 +293,17 @@ const LeadManagementContainer = () => {
               <SelectTrigger className="h-11 rounded-[10px]">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="all">All Statuses</SelectItem>
                 {leadStatuses.map((status) => (
-                  <SelectItem key={status} value={status}>
+                  <SelectItem key={status} value={status} className="cursor-pointer">
                     {status}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            <Select
+            {/* <Select
               value={sourceFilter}
               onValueChange={(value) => {
                 setPage(1);
@@ -320,7 +321,8 @@ const LeadManagementContainer = () => {
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select>
+            </Select> */}
+
           </div>
 
           {isLoading ? (

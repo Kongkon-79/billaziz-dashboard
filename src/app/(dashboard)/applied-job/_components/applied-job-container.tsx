@@ -778,9 +778,9 @@ const AppliedJobContainer = () => {
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="bg-white">
                           {applicationStatuses.map((item) => (
-                            <SelectItem key={item} value={item}>
+                            <SelectItem key={item} value={item} className="cursor-pointer">
                               {item}
                             </SelectItem>
                           ))}

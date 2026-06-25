@@ -2,42 +2,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardOverviewSkeleton() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-      {/* Active Projects Card */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 flex items-center space-x-4">
-        <Skeleton className="h-10 w-10 rounded-lg" />
-        <div className="space-y-2 flex-1">
-          <Skeleton className="h-4 w-28" />
-          <Skeleton className="h-8 w-12" />
+    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div
+          key={index}
+          className="rounded-[16px] border border-[#E6E7E6] bg-white p-5 shadow-[0px_4px_12px_0px_#0000000D]"
+        >
+          <div className="flex items-start justify-between">
+            <div className="flex-1 space-y-3">
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-9 w-20" />
+              <Skeleton className="h-3 w-36" />
+            </div>
+            <Skeleton className="h-12 w-12 rounded-[12px]" />
+          </div>
         </div>
-      </div>
-
-      {/* Upcoming Meeting Schedule Card */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 flex items-center space-x-4">
-        <Skeleton className="h-10 w-10 rounded-lg" />
-        <div className="space-y-2 flex-1">
-          <Skeleton className="h-4 w-40" />
-          <Skeleton className="h-8 w-12" />
-        </div>
-      </div>
-
-      {/* Upcoming Deadlines Card */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 flex items-center space-x-4">
-        <Skeleton className="h-10 w-10 rounded-lg" />
-        <div className="space-y-2 flex-1">
-          <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-8 w-12" />
-        </div>
-      </div>
-
-       <div className="bg-white rounded-lg border border-gray-200 p-6 flex items-center space-x-4">
-        <Skeleton className="h-10 w-10 rounded-lg" />
-        <div className="space-y-2 flex-1">
-          <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-8 w-12" />
-        </div>
-      </div>
-
+      ))}
     </div>
   );
 }

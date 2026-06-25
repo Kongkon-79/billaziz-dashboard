@@ -125,7 +125,10 @@ export function DashboardSidebar() {
                 <Link
                   href="/settings"
                   className={`flex h-[48px] items-center gap-2 rounded-[8px] border border-white px-4 text-base font-medium leading-normal text-white transition-all duration-300 hover:bg-primary hover:text-white ${
-                    pathName === "/settings" ? "bg-primary" : "bg-transparent"
+                    pathName === "/settings" ||
+                    pathName.startsWith("/settings/")
+                      ? "bg-primary"
+                      : "bg-transparent"
                   }`}
                 >
                   <Settings className="h-4 w-4" />
