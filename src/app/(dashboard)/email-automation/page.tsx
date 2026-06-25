@@ -1,17 +1,16 @@
-import React from 'react'
-import EmailAutomationContainer from './_components/email-automation-container'
-import DashboardOverviewHeader from '../_components/dashboard-overview-header'
+import DashboardOverviewHeader from "../_components/dashboard-overview-header";
+import EmailAutomationContainer from "./_components/email-automation-container";
 
 const EmailAutomationPage = () => {
   return (
     <div>
-        <DashboardOverviewHeader
-        title="Email Automation"
-        description="Email Automation here"
+      <DashboardOverviewHeader
+        title="Email Logs"
+        description="Review email delivery activity, failures, and rendered message details."
       />
-        <EmailAutomationContainer/>
+      <EmailAutomationContainer />
     </div>
-  )
-}
+  );
+};
 
-export default EmailAutomationPage
+export default EmailAutomationPage;

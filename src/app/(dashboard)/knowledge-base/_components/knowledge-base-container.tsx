@@ -72,9 +72,35 @@ const knowledgeCategories = [
   "Pricing",
   "Policy",
   "Other",
+  "Blog",
 ] as const;
 
 const knowledgeStatuses = ["active", "inactive"] as const;
+
+const normalizeKnowledgeCategory = (
+  value: unknown,
+): KnowledgeFormValues["category"] => {
+  if (typeof value !== "string") return "Other";
+
+  const normalizedValue = value.trim().toLowerCase();
+  const exactCategory = knowledgeCategories.find(
+    (category) => category.toLowerCase() === normalizedValue,
+  );
+
+  if (exactCategory) return exactCategory;
+
+  const categoryAliases: Record<string, KnowledgeFormValues["category"]> = {
+    "business documents": "Business Document",
+    "service descriptions": "Service Description",
+    "standard operating procedure": "SOP",
+    "standard operating procedures": "SOP",
+    faqs: "FAQ",
+    blogs: "Blog",
+    policies: "Policy",
+  };
+
+  return categoryAliases[normalizedValue] || "Other";
+};
 
 const knowledgeSchema = z.object({
   title: z.string(),
@@ -206,7 +232,7 @@ const KnowledgeBaseContainer = () => {
     const document = detailQuery.data.data;
     form.reset({
       title: document.title || "",
-      category: (document.category as KnowledgeFormValues["category"]) || "Other",
+      category: normalizeKnowledgeCategory(document.category),
       content: document.content || "",
       tags: document.tags?.join(", ") || "",
       status: (document.status as KnowledgeFormValues["status"]) || "active",
@@ -377,6 +403,16 @@ const KnowledgeBaseContainer = () => {
     setFormMode("edit");
     setSelectedDocumentId(document._id);
     setDetailMode("edit");
+    form.reset({
+      title: document.title || "",
+      category: normalizeKnowledgeCategory(document.category),
+      content: document.content || "",
+      tags: document.tags?.join(", ") || "",
+      status:
+        document.status === "inactive" || document.status === "active"
+          ? document.status
+          : "active",
+    });
     resetFileState();
     setIsFormOpen(true);
   };
@@ -569,14 +605,14 @@ const KnowledgeBaseContainer = () => {
                 </Table>
               </div>
 
-              <div className="flex flex-col gap-3 px-1 pt-5 md:flex-row md:items-center md:justify-between">
-                <p className="text-sm text-[#68706A]">
-                  Showing page {meta?.page ?? 1} of {totalPages}
-                </p>
+              <div className="px-1 pt-5">
                 <CustomPagination
                   currentPage={page}
                   totalPages={totalPages}
                   onPageChange={setPage}
+                  totalItems={meta?.total}
+                  pageSize={meta?.limit}
+                  itemLabel="documents"
                 />
               </div>
             </>
@@ -640,15 +676,22 @@ const KnowledgeBaseContainer = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
+                        <Select
+                          value={field.value || "Other"}
+                          onValueChange={field.onChange}
+                        >
                           <FormControl>
-                            <SelectTrigger className="h-11 rounded-[10px]">
+                            <SelectTrigger className="h-11 rounded-[10px] bg-white">
                               <SelectValue placeholder="Select category" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className="bg-white">
                             {knowledgeCategories.map((item) => (
-                              <SelectItem key={item} value={item}>
+                              <SelectItem
+                                key={item}
+                                value={item}
+                                className="cursor-pointer"
+                              >
                                 {item}
                               </SelectItem>
                             ))}

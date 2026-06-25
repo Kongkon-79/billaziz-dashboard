@@ -608,14 +608,14 @@ const JobsContainer = () => {
                 </Table>
               </div>
 
-              <div className="flex flex-col gap-3 px-1 pt-5 md:flex-row md:items-center md:justify-between">
-                <p className="text-sm text-[#68706A]">
-                  Showing page {meta?.page ?? 1} of {totalPages}
-                </p>
+              <div className="px-1 pt-5">
                 <CustomPagination
                   currentPage={page}
                   totalPages={totalPages}
                   onPageChange={setPage}
+                  totalItems={meta?.total}
+                  pageSize={meta?.limit}
+                  itemLabel="jobs"
                 />
               </div>
             </>

@@ -19,7 +19,7 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      "flex h-9 w-full cursor-pointer items-center justify-between whitespace-nowrap rounded-[8px] border border-input bg-white px-3 py-2 text-sm shadow-sm ring-offset-background transition-colors data-[placeholder]:text-muted-foreground hover:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       className
     )}
     {...props}
@@ -39,7 +39,7 @@ const SelectScrollUpButton = React.forwardRef<
   <SelectPrimitive.ScrollUpButton
     ref={ref}
     className={cn(
-      "flex cursor-default items-center justify-center py-1",
+      "flex cursor-pointer items-center justify-center bg-white py-1 text-[#68706A]",
       className
     )}
     {...props}
@@ -56,7 +56,7 @@ const SelectScrollDownButton = React.forwardRef<
   <SelectPrimitive.ScrollDownButton
     ref={ref}
     className={cn(
-      "flex cursor-default items-center justify-center py-1",
+      "flex cursor-pointer items-center justify-center bg-white py-1 text-[#68706A]",
       className
     )}
     {...props}
@@ -75,7 +75,7 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-50 max-h-[--radix-select-content-available-height] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-select-content-transform-origin]",
+        "relative z-50 max-h-[var(--radix-select-content-available-height)] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-[10px] border border-[#E0E4EC] bg-white text-[#343A40] shadow-[0px_12px_32px_0px_#0000001F] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-select-content-transform-origin]",
         position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
         className
@@ -86,9 +86,9 @@ const SelectContent = React.forwardRef<
       <SelectScrollUpButton />
       <SelectPrimitive.Viewport
         className={cn(
-          "p-1",
+          "w-full min-w-[var(--radix-select-trigger-width)] bg-white p-1.5",
           position === "popper" &&
-            "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
+            "min-w-[var(--radix-select-trigger-width)]"
         )}
       >
         {children}
@@ -118,7 +118,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex min-h-9 w-full cursor-pointer select-none items-center rounded-[7px] py-2 pl-3 pr-9 text-sm outline-none transition-colors hover:bg-[#FFF7F2] focus:bg-[#FFF0E6] focus:text-primary data-[state=checked]:bg-[#FFF0E6] data-[state=checked]:font-medium data-[state=checked]:text-primary data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
       className
     )}
     {...props}

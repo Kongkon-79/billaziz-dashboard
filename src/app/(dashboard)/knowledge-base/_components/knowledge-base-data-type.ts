@@ -5,7 +5,8 @@ export type KnowledgeCategory =
   | "FAQ"
   | "Pricing"
   | "Policy"
-  | "Other";
+  | "Other"
+  | "Blog";
 
 export type KnowledgeStatus = "active" | "inactive";
 

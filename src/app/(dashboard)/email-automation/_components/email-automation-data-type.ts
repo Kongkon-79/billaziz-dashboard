@@ -1,33 +1,5 @@
 export type EmailLogStatus = "sent" | "failed";
 
-export interface EmailTemplateItem {
-  _id: string;
-  key: string;
-  name: string;
-  subject: string;
-  htmlBody: string;
-  description?: string;
-  variables: string[];
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  __v?: number;
-}
-
-export interface EmailTemplateListResponse {
-  statusCode: number;
-  success: boolean;
-  message: string;
-  data: EmailTemplateItem[];
-}
-
-export interface EmailTemplateMutationResponse {
-  statusCode: number;
-  success: boolean;
-  message: string;
-  data: EmailTemplateItem;
-}
-
 export interface EmailLogItem {
   _id: string;
   to: string;
@@ -64,33 +36,4 @@ export interface EmailLogDetailResponse {
   success: boolean;
   message: string;
   data: EmailLogItem;
-}
-
-export interface SendEmailResponse {
-  statusCode: number;
-  success: boolean;
-  message: string;
-  data: {
-    sent: boolean;
-    reason?: string;
-  };
-}
-
-export interface EmailTemplateFormValues {
-  key: string;
-  name: string;
-  subject: string;
-  htmlBody: string;
-  description: string;
-  variables: string;
-  isActive: boolean;
-}
-
-export interface SendEmailFormValues {
-  to: string;
-  templateKey: string;
-  variables: string;
-  leadId: string;
-  description: string;
-  orderId: string;
 }

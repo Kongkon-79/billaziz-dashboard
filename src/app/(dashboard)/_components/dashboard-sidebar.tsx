@@ -1,6 +1,16 @@
 "use client";
 
-import { LayoutDashboard, LogOut, Settings, TableOfContents } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  CircleHelp,
+  FileCheck2,
+  Files,
+  LayoutDashboard,
+  LogOut,
+  Mail,
+  Settings,
+  UsersRound,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -30,32 +40,32 @@ const items = [
   {
     title: "Lead Management",
     url: "/lead-management",
-    icon: LayoutDashboard,
+    icon: UsersRound,
   },
     {
     title: "FAQ",
     url: "/faq",
-    icon: TableOfContents ,
+    icon: CircleHelp,
   },
     {
     title: "Applied Job",
     url: "/applied-job",
-    icon: LayoutDashboard,
+    icon: FileCheck2,
   },
     {
     title: "Jobs",
     url: "/jobs",
-    icon: TableOfContents ,
+    icon: BriefcaseBusiness,
   },
      {
-    title: "Email Automation",
+    title: "Email Logs",
     url: "/email-automation",
-    icon: LayoutDashboard,
+    icon: Mail,
   },
     {
     title: "Knowledge Base",
     url: "/knowledge-base",
-    icon: TableOfContents ,
+    icon: Files,
   },
 ];
 
