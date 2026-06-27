@@ -459,7 +459,12 @@ const KnowledgeBaseContainer = () => {
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex w-full items-center justify-end">
+      <div className="flex w-full items-center justify-end gap-6">
+         <Button
+          className="h-[48px] rounded-[10px] bg-primary px-5 text-base font-semibold text-white hover:bg-primary/90"
+        >
+          Update Ai Knowledge
+        </Button>
         <Button
           onClick={handleCreate}
           className="h-[48px] rounded-[10px] bg-primary px-5 text-base font-semibold text-white hover:bg-primary/90"
