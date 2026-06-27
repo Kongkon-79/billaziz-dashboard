@@ -64,6 +64,16 @@ import type {
 } from "./knowledge-base-data-type";
 import ViewKnowledgeDialog from "./view-knowledge-dialog";
 
+type ReindexMutationResponse = {
+  success: boolean;
+  message?: string;
+  data?: {
+    total_docs?: number;
+    total_chunks?: number;
+    collections?: string[];
+  };
+};
+
 const knowledgeCategories = [
   "Business Document",
   "SOP",
@@ -366,6 +376,42 @@ const KnowledgeBaseContainer = () => {
     },
   });
 
+  const reindexMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/admin/reindex", {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+        },
+      });
+
+      const response: ReindexMutationResponse = await res.json();
+
+      if (!res.ok || !response?.success) {
+        throw new Error(response?.message || "Failed to update AI knowledge");
+      }
+
+      return response;
+    },
+    onSuccess: (response) => {
+      const totalDocs = response.data?.total_docs ?? 0;
+      const totalChunks = response.data?.total_chunks ?? 0;
+
+      toast.success(
+        totalDocs || totalChunks
+          ? `AI knowledge updated: ${totalDocs} docs, ${totalChunks} chunks`
+          : response.message || "AI knowledge updated successfully"
+      );
+    },
+    onError: (mutationError) => {
+      toast.error(
+        mutationError instanceof Error
+          ? mutationError.message
+          : "Failed to update AI knowledge"
+      );
+    },
+  });
+
   const documents = data?.data ?? [];
   const meta = data?.meta;
   const totalPages = meta ? Math.max(1, Math.ceil(meta.total / meta.limit)) : 1;
@@ -460,10 +506,19 @@ const KnowledgeBaseContainer = () => {
   return (
     <div className="space-y-6 p-6">
       <div className="flex w-full items-center justify-end gap-6">
-         <Button
+        <Button
+          onClick={() => reindexMutation.mutate()}
+          disabled={reindexMutation.isPending}
           className="h-[48px] rounded-[10px] bg-primary px-5 text-base font-semibold text-white hover:bg-primary/90"
         >
-          Update Ai Knowledge
+          {reindexMutation.isPending ? (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              Updating...
+            </>
+          ) : (
+            "Update Ai Knowledge"
+          )}
         </Button>
         <Button
           onClick={handleCreate}
