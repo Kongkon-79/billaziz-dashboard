@@ -14,8 +14,9 @@ type ReindexResponse = {
 };
 
 const reindexUrl =
-  process.env.AI_REINDEX_URL || "http://187.77.187.56:8010/api/admin/reindex";
-const reindexApiKey = process.env.AI_REINDEX_API_KEY;
+  process.env.NEXT_PUBLIC_AI_REINDEX_URL ||
+  "http://187.77.187.56:8010/api/admin/reindex";
+const reindexApiKey = process.env.NEXT_PUBLIC_AI_REINDEX_API_KEY;
 
 export async function POST() {
   const session = await getServerSession(authOptions);
@@ -45,8 +46,8 @@ export async function POST() {
         accept: "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body,
       cache: "no-store",
+      body: body.toString(),
     });
 
     const response: ReindexResponse = await res.json();
@@ -55,6 +56,7 @@ export async function POST() {
       return NextResponse.json(
         {
           success: false,
+          statuscode: response?.statuscode ?? res.status,
           message: response?.message || "Failed to update AI knowledge",
         },
         { status: res.status || 500 }
@@ -63,6 +65,7 @@ export async function POST() {
 
     return NextResponse.json({
       success: true,
+      statuscode: response.statuscode ?? res.status,
       message: "AI knowledge updated successfully",
       data: response.text,
     });

@@ -65,9 +65,10 @@ import type {
 import ViewKnowledgeDialog from "./view-knowledge-dialog";
 
 type ReindexMutationResponse = {
-  success: boolean;
+  status?: boolean;
+  statuscode?: number;
   message?: string;
-  data?: {
+  text?: {
     total_docs?: number;
     total_chunks?: number;
     collections?: string[];
@@ -378,28 +379,41 @@ const KnowledgeBaseContainer = () => {
 
   const reindexMutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch("/api/admin/reindex", {
+      const reindexUrl = process.env.NEXT_PUBLIC_AI_REINDEX_URL;
+      const reindexApiKey = process.env.NEXT_PUBLIC_AI_REINDEX_API_KEY;
+
+      if (!reindexUrl || !reindexApiKey) {
+        throw new Error("AI reindex API is not configured");
+      }
+
+      const body = new URLSearchParams();
+      body.set("api_key", reindexApiKey);
+
+      const res = await fetch(reindexUrl, {
         method: "POST",
         headers: {
           accept: "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
+        body: body.toString(),
       });
 
       const response: ReindexMutationResponse = await res.json();
 
-      if (!res.ok || !response?.success) {
+      if (!res.ok || !response?.status) {
         throw new Error(response?.message || "Failed to update AI knowledge");
       }
 
       return response;
     },
     onSuccess: (response) => {
-      const totalDocs = response.data?.total_docs ?? 0;
-      const totalChunks = response.data?.total_chunks ?? 0;
+      const totalDocs = response.text?.total_docs ?? 0;
+      const totalChunks = response.text?.total_chunks ?? 0;
+      const totalCollections = response.text?.collections?.length ?? 0;
 
       toast.success(
         totalDocs || totalChunks
-          ? `AI knowledge updated: ${totalDocs} docs, ${totalChunks} chunks`
+          ? `AI knowledge updated: ${totalDocs} docs, ${totalChunks} chunks, ${totalCollections} collections`
           : response.message || "AI knowledge updated successfully"
       );
     },
@@ -511,7 +525,7 @@ const KnowledgeBaseContainer = () => {
           disabled={reindexMutation.isPending}
           className="h-[48px] rounded-[10px] bg-primary px-5 text-base font-semibold text-white hover:bg-primary/90"
         >
-          {reindexMutation.isPending ? (
+          {reindexMutation?.isPending ? (
             <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               Updating...
