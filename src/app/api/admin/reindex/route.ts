@@ -13,9 +13,9 @@ type ReindexResponse = {
   message?: string;
 };
 
-const reindexUrl =
-  process.env.NEXT_PUBLIC_AI_REINDEX_URL ||
-  "http://187.77.187.56:8010/api/admin/reindex";
+const aiApiBaseUrl =
+  process.env.NEXT_PUBLIC_AI_API_BASE_URL || "http://187.77.187.56:8010/api";
+const reindexUrl = `${aiApiBaseUrl.replace(/\/$/, "")}/admin/reindex`;
 const reindexApiKey = process.env.NEXT_PUBLIC_AI_REINDEX_API_KEY;
 
 export async function POST() {

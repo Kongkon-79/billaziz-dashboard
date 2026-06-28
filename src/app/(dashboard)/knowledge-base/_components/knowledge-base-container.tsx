@@ -379,12 +379,14 @@ const KnowledgeBaseContainer = () => {
 
   const reindexMutation = useMutation({
     mutationFn: async () => {
-      const reindexUrl = process.env.NEXT_PUBLIC_AI_REINDEX_URL;
+      const aiApiBaseUrl = process.env.NEXT_PUBLIC_AI_API_BASE_URL;
       const reindexApiKey = process.env.NEXT_PUBLIC_AI_REINDEX_API_KEY;
 
-      if (!reindexUrl || !reindexApiKey) {
+      if (!aiApiBaseUrl || !reindexApiKey) {
         throw new Error("AI reindex API is not configured");
       }
+
+      const reindexUrl = `${aiApiBaseUrl.replace(/\/$/, "")}/admin/reindex`;
 
       const body = new URLSearchParams();
       body.set("api_key", reindexApiKey);

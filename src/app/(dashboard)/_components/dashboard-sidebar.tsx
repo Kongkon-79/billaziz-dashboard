@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   LogOut,
   Mail,
+  MessageSquareText,
   Settings,
   UsersRound,
 } from "lucide-react";
@@ -66,6 +67,11 @@ const items = [
     title: "Knowledge Base",
     url: "/knowledge-base",
     icon: Files,
+  },
+  {
+    title: "AI Conversation",
+    url: "/ai-conversation",
+    icon: MessageSquareText,
   },
 ];
 
